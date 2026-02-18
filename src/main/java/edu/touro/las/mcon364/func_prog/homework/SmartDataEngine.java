@@ -1,7 +1,6 @@
 package edu.touro.las.mcon364.func_prog.homework;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.*;
 
 /**
@@ -34,17 +33,24 @@ public class SmartDataEngine {
      * Implement a generic pipeline.
      *
      * Behavior:
-     *  1. Filter using Predicate
-     *  2. Transform using Function
-     *  3. Pass result to Consumer
+     *  1. Filter using Predicate -> .test()
+     *  2. Transform using Function -> .apply()
+     *  3. Pass result to Consumer -> .accept()
      */
+    // all inputs are type T, outputs are type R
     public static <T, R> void pipeline(
             List<T> input,
             Predicate<T> filter,
             Function<T, R> mapper,
             Consumer<R> consumer
     ) {
-        // TODO
+        for(T item : input) {
+            if(filter.test(item)) {
+                R transformed = mapper.apply(item);
+                consumer.accept(transformed);
+            }
+        }
+
     }
 
     // ============================================================
@@ -52,19 +58,19 @@ public class SmartDataEngine {
     // ============================================================
 
     /**
-     * TODO:
      * Implement a safe divide method.
      *
      * - If denominator is 0 → return Optional.empty()
      * - Otherwise return Optional.of(result)
      */
     public static Optional<Double> safeDivide(double a, double b) {
-        // TODO
-        return Optional.empty();
+        if(b==0)
+            return Optional.empty();
+        double result= a/b;
+        return Optional.of(result);
     }
 
     /**
-     * TODO:
      * Use Optional chaining:
      *
      *  - Divide two numbers using safeDivide(...)
@@ -78,8 +84,12 @@ public class SmartDataEngine {
      *  - Use orElse(...) to provide a default value when empty.
      */
     public static double processDivision(double a, double b) {
-        // TODO
-        return 0;
+        return safeDivide(a,b).map(result->result*10).orElse(-1.0);
+        // if the safeDivide return an Optional with an obj inside, then .map will
+        //transform the value with the lambda. If there is no value inside, .map won't do anything.
+        // So- regardless of if there is a value inside the Optional, we continue down the
+        // chain, and hit the orElse block. The orElse block provides a defualt value
+        // when the Optional was empty.
     }
 
     // ============================================================
@@ -87,7 +97,6 @@ public class SmartDataEngine {
     // ============================================================
 
     /**
-     * TODO:
      * Use switch expression with pattern matching.
      *
      * Behavior:
@@ -101,15 +110,16 @@ public class SmartDataEngine {
     public static Object transformObject(Object input) {
 
         // Example structure (not solution):
+        // Java checks if input is an instance of the class (example - Integer)
+        // If the test passes, Java automatically creates a local variable ("i" in this case)
+        // and assigns the value of input to it, already cast to the correct type.
 
-        // return switch (input) {
-        //     case Integer i -> ...
-        //     case String s  -> ...
-        //     case Double d  -> ...
-        //     default -> ...
-        // };
-
-        return null;
+         return switch (input) {
+             case Integer i -> i*i;
+             case String s  -> s.toUpperCase();
+             case Double d  -> Math.round(d);
+             default -> "Unsupported";
+         };
     }
 
     // ============================================================
@@ -117,7 +127,6 @@ public class SmartDataEngine {
     // ============================================================
 
     /**
-     * TODO:
      * Create and return a Function<String, Integer>
      * that performs the following transformations in order:
      *
@@ -146,8 +155,26 @@ public class SmartDataEngine {
      */
 
     public static Function<String, Integer> buildStringLengthPipeline() {
-        // TODO
-        return null;
+        // we are not passing in an actual string bc this method doesn't run the logic,
+        // rather- it builds the logic. Its the Function. So now when we call
+        // buildStringLengthPipeline.applu("Hello"); --> the Function will be called
+        // and will run. We will then refer to the String "Hello" as "s" in our case-
+        // as I did with the lambdas.
+
+
+        // Trim leading and trailing whitespace
+        Function<String, String> trimmer = (s) -> s.trim();
+        // Convert the string to lowercase
+        Function<String, String> toLower = (s) -> s.toLowerCase();
+        // Return the length of the final string
+        Function <String, Integer> length = (s) -> s.length();
+
+        // Pipeline1 and Pipeline2 return the exact same result
+        // Pipeline using andThen L -> R
+        Function <String, Integer> pipeLine1 = trimmer.andThen(toLower).andThen(length);
+        // Pipeline using compose R -> L
+        Function<String, Integer> pipeLine2 = length.compose(toLower).compose(trimmer);
+        return pipeLine1;
     }
 
     // ============================================================
@@ -155,7 +182,6 @@ public class SmartDataEngine {
     // ============================================================
 
    /**
-     * TODO:
      * Implement this method using ALL four functional interfaces:
      *
      *  - Supplier  → generate random integers
@@ -187,7 +213,34 @@ public class SmartDataEngine {
      */
 
     public static void runScoreProcessor() {
-        // TODO
+        // 1- Supplier  → generate random integers- Generate 10 random integers between 1 and 100.
+        // (Call supplier.get() multiple times.)
+        // Supplier -> .get()
+        // random.nextInt(100) gives us ints from 0 thru 99. so we do +1
+        // for a specific range that does not start at 0 or 1, we can use this formula:
+        // random.nextInt(max - min + 1) + min -> just playing with the offset:)
+        Random random = new Random();
+        Supplier<Integer> generateRandIntegers = () -> random.nextInt(100)+1;
+
+        // 2- Predicate → filter numbers > 50
+        // Predicate -> .test()
+        Predicate <Integer> filterInt = number -> number > 50;
+
+        // 3- Function  → convert Integer → "Score: X" - Convert each remaining number into a formatted string.
+        // Function -> .apply()
+        Function<Integer, String> convertor= number -> "Score: "+number;
+
+        // 4- Consumer  → print the final result
+        // Consumer -> .accept()
+        Consumer<String> printer = (formatted_number) -> System.out.println(formatted_number);
+
+        //get the list of random numbers
+        List <Integer> list_of_integers = new ArrayList<>();
+        for(int i=0;i<10;i++) {
+            int number= generateRandIntegers.get();
+            list_of_integers.add(number);
+        }
+        pipeline(list_of_integers, filterInt, convertor, printer);
     }
 
 }
