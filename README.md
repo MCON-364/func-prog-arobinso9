@@ -11,10 +11,10 @@ In this assignment, you will build a small **functional data processing engine**
 This micro-project integrates:
 
 - Functional interfaces
-  - `Supplier`
-  - `Predicate`
-  - `Function`
-  - `Consumer`
+  - `Supplier`- take in nothing, and return something --> will use .get()
+  - `Predicate` - takes in an input, returns boolean --> will use .test()
+  - `Function` - takes in 1 input, and return one value  --> will use .apply()
+  - `Consumer` - takes in one input, and returns nothing --> will use .accept()
 - Lambda expressions
 - Functional interface chaining
 - `Optional`

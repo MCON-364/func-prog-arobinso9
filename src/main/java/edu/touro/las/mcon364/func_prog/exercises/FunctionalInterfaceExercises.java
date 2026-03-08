@@ -24,7 +24,7 @@ import static java.lang.Math.random;
 public class FunctionalInterfaceExercises {
 
     // =========================================================
-    // PART 1 — SUPPLIERS
+    // PART 1 — SUPPLIERS - take in nothing, and return something
     // =========================================================
 
     /**
@@ -49,6 +49,16 @@ public class FunctionalInterfaceExercises {
     /**
      * 2) Create a Supplier that generates a random number
      * between 1 and 100.
+     * can also do this:
+     * import java.util.Random;
+     * import java.util.function.Supplier;
+     *
+     * public static Supplier<Integer> randomScoreSupplier() {
+     *     Random random = new Random();
+     *     // random.nextInt(100) gives us 0 to 99, so we do +1 to offset
+     *     Supplier<Integer> supplier=  () -> random.nextInt(100) + 1;
+     *     return supplier;
+     * }
      */
     public static Supplier<Integer> randomScoreSupplier() {
         //Math.random() expects no params - it returns a decimal btwn 0 and 1. so we multiply
@@ -58,7 +68,8 @@ public class FunctionalInterfaceExercises {
     }
 
     // =========================================================
-    // PART 2 — PREDICATES
+    // PART 2 — PREDICATES- takes in an input, returns boolean
+    // does the input meet a certain condition
     // =========================================================
 
     /**
@@ -86,7 +97,7 @@ public class FunctionalInterfaceExercises {
     }
 
     // =========================================================
-    // PART 3 — FUNCTIONS
+    // PART 3 — FUNCTIONS- takes in 1 input, and return one value
     // =========================================================
 
     /**
@@ -130,7 +141,7 @@ public class FunctionalInterfaceExercises {
     }
 
     // =========================================================
-    // PART 4 — CONSUMERS
+    // PART 4 — CONSUMERS- takes in one input, and returns nothing
     // =========================================================
 
     /**
@@ -141,7 +152,7 @@ public class FunctionalInterfaceExercises {
      * *** Hello ***
      */
     public static Consumer<String> starPrinter() {
-        Consumer <String>consumer = (value) -> System.out.println("*** "+value+" ***");
+        Consumer <String> consumer = (value) -> System.out.println("*** "+value+" ***");
         return consumer;
     }
 
@@ -179,7 +190,6 @@ public class FunctionalInterfaceExercises {
 
         //we always put the method name before the specific method we need! like longerThan3.test()
         //Predicate- our test --> will use .test()
-        // Predicate
         Predicate<String> longerThan3= s -> s.length()>3;
 
         //The Function - receives input and returns --> will use .apply()
